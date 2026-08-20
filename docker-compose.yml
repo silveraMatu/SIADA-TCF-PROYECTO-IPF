@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: siada_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: siada_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: siada_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@siada.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  neo4j:
+    image: neo4j:5.15.0
+    container_name: siada_neo4j
+    environment:
+      NEO4J_AUTH: neo4j/adminpassword
+      NEO4J_PLUGINS: '["apoc"]' 
+    ports:
+      - "7474:7474" # Interfaz visual web de Neo4j
+      - "7687:7687" # Puerto de conexión para el backend
+    volumes:
+      - neo4j_data:/data
+
+volumes:
+  pgdata:
+  neo4j_data:
