@@ -31,9 +31,9 @@ class OrganismoCreate(OrganismoBase):
 
 #Schema para GET
 class OrganismoResponse(OrganismoBase):
-    idOrganismo: int
+    id_organismo: int
     activo: bool
-    crated_at:datetime
+    created_at: datetime
 
     #Pydantic lee directamente las instancias de SQLAlchemy
     model_config = ConfigDict(from_attributes=True)

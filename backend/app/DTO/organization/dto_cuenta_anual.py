@@ -14,7 +14,7 @@ class CuentaAnualCreate(CuentaAnualBase):
 
 class CuentaAnualResponse(CuentaAnualBase):
     id_cuenta_anual: int
-    estado_cuenta_anual: str
+    estado_general: str
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
