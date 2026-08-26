@@ -50,6 +50,8 @@ Viven en `backend/app/DTO/<dominio>/` con archivos `dto_<nombre>.py` (ej. `DTO/o
 - **`*Response`** incluye la PK y `created_at`, con `model_config = ConfigDict(from_attributes=True)`. **`*Create`** no incluye PK, `created_at` ni campos con default de servidor (ej. `estado`, `activo`): valida solo lo que llega del cliente.
 - **Restricciones espejo del modelo**: `max_length` = longitud del `String`, rangos con `Field(ge=…, le=…)`. En `examples` usar el tipo real (ej. `examples=[4]`, no `["4"]`).
 - El `*Base` de una entidad raíz lleva `id_<padre>` (ej. `id_organismo` en `CuentaAnualBase`). Al crear recursos anidados, el id del padre viaja en el body hasta que existan routers.
+- **Excepciones de timestamp**: `PartidaPresupuestaria` no tiene `created_at` (su `*Response` solo agrega la PK). `IntervencionAuditor` usa `fecha_resolucion` como timestamp con default de servidor. `UsuarioRBACResponse` **nunca expone `password_hash`**; `UsuarioRBACCreate` recibe `password` en texto plano.
+- Los dominios nuevos (`libros/`, `auditoria/`, `ml_ia/`) siguen el mismo patrón de `organization/`, un archivo por entidad y sin `__init__.py` (imports directos por namespace package).
 
 ## Convenciones
 
