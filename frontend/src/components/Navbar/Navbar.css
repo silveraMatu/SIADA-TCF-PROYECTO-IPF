@@ -65,13 +65,24 @@
   font-weight: 400;
 }
 
-
-
 /* Action Buttons */
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.user-nav-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user-nav-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: capitalize;
 }
 
 .btn {

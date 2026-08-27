@@ -1,7 +1,6 @@
-import React from 'react';
 import './Navbar.css';
 
-export default function Navbar() {
+export default function Navbar({ user, onLogout }) {
   return (
     <header className="navbar-header">
       {/* Top Banner Bar */}
@@ -23,7 +22,6 @@ export default function Navbar() {
             </div>
             
             <div className="brand-text">
-              {/* "ejemplo" word requested by user */}
               <h1 className="brand-title">Navbar</h1>
               <p className="brand-subtitle">
                 Provincia de Formosa, Argentina
@@ -33,12 +31,23 @@ export default function Navbar() {
 
           {/* Action Buttons Top Right */}
           <div className="navbar-actions">
-            <button type="button" className="btn btn-outline">
-              Identificarse
-            </button>
-            <button type="button" className="btn btn-teal">
-              Contáctenos
-            </button>
+            {user ? (
+              <div className="user-nav-profile">
+                <span className="user-nav-name">{user.nombre_completo || user.cuil}</span>
+                <button type="button" className="btn btn-outline" onClick={onLogout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <>
+                <button type="button" className="btn btn-outline">
+                  Identificarse
+                </button>
+                <button type="button" className="btn btn-teal">
+                  Contáctenos
+                </button>
+              </>
+            )}
           </div>
 
         </div>

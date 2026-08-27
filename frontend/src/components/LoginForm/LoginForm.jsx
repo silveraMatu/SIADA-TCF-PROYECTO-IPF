@@ -1,60 +1,42 @@
-import React, { useState } from 'react';
+import { useLoginForm } from '../../hooks/useLoginForm';
 import './LoginForm.css';
 
-export default function LoginForm() {
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  // Login Form States
-  const [Cuil, setCuil] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedCuil, setSubmittedCuil] = useState(null);
-
-  // Register Form States
-  const [regCuil, setRegCuil] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regConfirmPassword, setRegConfirmPassword] = useState('');
-  const [showRegPassword, setShowRegPassword] = useState(false);
-  const [isRegSubmitting, setIsRegSubmitting] = useState(false);
-  const [registeredCuil, setRegisteredCuil] = useState(null);
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (!Cuil.trim() || !password) return;
-
-    setIsSubmitting(true);
-    setSubmittedCuil(null);
-
-    // Simulate login API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmittedCuil(Cuil);
-    }, 800);
-  };
-
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault();
-    if (!regCuil.trim() || !regPassword || regPassword !== regConfirmPassword) return;
-
-    setIsRegSubmitting(true);
-    setRegisteredCuil(null);
-
-    // Simulate register API call
-    setTimeout(() => {
-      setIsRegSubmitting(false);
-      setRegisteredCuil(regCuil);
-    }, 800);
-  };
+export default function LoginForm({ onLoginSuccess }) {
+  const {
+    estaGirado,
+    setEstaGirado,
+    cuil,
+    setCuil,
+    clave,
+    setClave,
+    mostrarClave,
+    setMostrarClave,
+    cargando,
+    cuilEnviado,
+    setCuilEnviado,
+    manejarEnvioLogin,
+    cuilRegistro,
+    setCuilRegistro,
+    claveRegistro,
+    setClaveRegistro,
+    confirmarClaveRegistro,
+    setConfirmarClaveRegistro,
+    mostrarClaveRegistro,
+    setMostrarClaveRegistro,
+    cargandoRegistro,
+    cuilRegistrado,
+    setCuilRegistrado,
+    manejarEnvioRegistro
+  } = useLoginForm(onLoginSuccess);
 
   return (
     <div className="login-wrapper">
-      <div className={`card-container ${isFlipped ? 'flipped' : ''}`}>
+      <div className={`card-container ${estaGirado ? 'flipped' : ''}`}>
         <div className="card-inner">
           
-          {/* FRONT SIDE: INICIAR SESIÓN */}
+          {/* FRENTE: INICIAR SESIÓN */}
           <div className="card-side card-front">
-            {submittedCuil ? (
+            {cuilEnviado ? (
               <div className="login-success">
                 <div className="success-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -62,22 +44,22 @@ export default function LoginForm() {
                     <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
                 </div>
-                <h2>¡Bienvenido, {submittedCuil}!</h2>
+                <h2>¡Bienvenido, {cuilEnviado}!</h2>
                 <p>Has iniciado sesión correctamente en el sistema.</p>
                 <button 
                   type="button" 
                   className="btn-submit" 
-                  onClick={() => { setSubmittedCuil(null); setPassword(''); }}
+                  onClick={() => { setCuilEnviado(null); setClave(''); }}
                 >
                   Cerrar sesión
                 </button>
               </div>
             ) : (
-              <form className="login-form" onSubmit={handleLoginSubmit}>
+              <form className="login-form" onSubmit={manejarEnvioLogin} noValidate>
                 
-                {/* Field: Cuil */}
+                {/* Campo: Cuil */}
                 <div className="form-group">
-                  <label htmlFor="Cuil" className="form-label">
+                  <label htmlFor="cuil" className="form-label">
                     Cuil
                   </label>
                   <div className="input-container">
@@ -88,21 +70,20 @@ export default function LoginForm() {
                       </svg>
                     </div>
                     <input
-                      id="Cuil"
+                      id="cuil"
                       type="text"
                       className="form-input"
                       placeholder="Cuil"
-                      value={Cuil}
+                      value={cuil}
                       onChange={(e) => setCuil(e.target.value)}
-                      required
                       autoComplete="username"
                     />
                   </div>
                 </div>
 
-                {/* Field: Contraseña */}
+                {/* Campo: Contraseña */}
                 <div className="form-group">
-                  <label htmlFor="password" className="form-label">
+                  <label htmlFor="clave" className="form-label">
                     Contraseña
                   </label>
                   <div className="input-container">
@@ -113,22 +94,21 @@ export default function LoginForm() {
                       </svg>
                     </div>
                     <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
+                      id="clave"
+                      type={mostrarClave ? 'text' : 'password'}
                       className="form-input"
                       placeholder="Contraseña"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
+                      value={clave}
+                      onChange={(e) => setClave(e.target.value)}
                       autoComplete="current-password"
                     />
                     <button
                       type="button"
                       className="toggle-password-btn"
-                      onClick={() => setShowPassword(!showPassword)}
-                      title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      onClick={() => setMostrarClave(!mostrarClave)}
+                      title={mostrarClave ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     >
-                      {showPassword ? (
+                      {mostrarClave ? (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                           <line x1="1" y1="1" x2="23" y2="23" />
@@ -143,12 +123,12 @@ export default function LoginForm() {
                   </div>
                 </div>
 
-                {/* Options: Flip to Register & Forgot password */}
+                {/* Opciones: Girar a Registro y Olvide contraseña */}
                 <div className="form-extra">
                   <button
                     type="button"
                     className="register-link"
-                    onClick={() => setIsFlipped(true)}
+                    onClick={() => setEstaGirado(true)}
                   >
                     ¿No tienes una cuenta?
                   </button>
@@ -157,13 +137,13 @@ export default function LoginForm() {
                   </a>
                 </div>
 
-                {/* Submit Button */}
+                {/* Boton de Enviar */}
                 <button
                   type="submit"
-                  className={`btn-submit ${isSubmitting ? 'loading' : ''}`}
-                  disabled={isSubmitting}
+                  className={`btn-submit ${cargando ? 'loading' : ''}`}
+                  disabled={cargando}
                 >
-                  {isSubmitting ? (
+                  {cargando ? (
                     <span className="spinner"></span>
                   ) : (
                     'Iniciar sesión'
@@ -174,9 +154,9 @@ export default function LoginForm() {
             )}
           </div>
 
-          {/* BACK SIDE: REGISTRARSE */}
+          {/* DORSO: REGISTRARSE */}
           <div className="card-side card-back">
-            {registeredCuil ? (
+            {cuilRegistrado ? (
               <div className="login-success">
                 <div className="success-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -185,28 +165,28 @@ export default function LoginForm() {
                   </svg>
                 </div>
                 <h2>¡Registro exitoso!</h2>
-                <p>La cuenta para el CUIL <strong>{registeredCuil}</strong> ha sido creada.</p>
+                <p>La cuenta para el CUIL <strong>{cuilRegistrado}</strong> ha sido creada.</p>
                 <button 
                   type="button" 
                   className="btn-submit" 
                   onClick={() => {
-                    setRegisteredCuil(null);
-                    setRegPassword('');
-                    setRegConfirmPassword('');
-                    setIsFlipped(false);
+                    setCuilRegistrado(null);
+                    setClaveRegistro('');
+                    setConfirmarClaveRegistro('');
+                    setEstaGirado(false);
                   }}
                 >
                   Ir a Iniciar sesión
                 </button>
               </div>
             ) : (
-              <form className="login-form" onSubmit={handleRegisterSubmit}>
+              <form className="login-form" onSubmit={manejarEnvioRegistro} noValidate>
                 
                 <h2 className="form-title">Crear Cuenta</h2>
 
-                {/* Register Field: Cuil */}
+                {/* Campo Registro: Cuil */}
                 <div className="form-group">
-                  <label htmlFor="regCuil" className="form-label">
+                  <label htmlFor="cuilRegistro" className="form-label">
                     Cuil
                   </label>
                   <div className="input-container">
@@ -217,21 +197,20 @@ export default function LoginForm() {
                       </svg>
                     </div>
                     <input
-                      id="regCuil"
+                      id="cuilRegistro"
                       type="text"
                       className="form-input"
                       placeholder="Cuil"
-                      value={regCuil}
-                      onChange={(e) => setRegCuil(e.target.value)}
-                      required
+                      value={cuilRegistro}
+                      onChange={(e) => setCuilRegistro(e.target.value)}
                       autoComplete="off"
                     />
                   </div>
                 </div>
 
-                {/* Register Field: Contraseña */}
+                {/* Campo Registro: Contraseña */}
                 <div className="form-group">
-                  <label htmlFor="regPassword" className="form-label">
+                  <label htmlFor="claveRegistro" className="form-label">
                     Contraseña
                   </label>
                   <div className="input-container">
@@ -242,22 +221,21 @@ export default function LoginForm() {
                       </svg>
                     </div>
                     <input
-                      id="regPassword"
-                      type={showRegPassword ? 'text' : 'password'}
+                      id="claveRegistro"
+                      type={mostrarClaveRegistro ? 'text' : 'password'}
                       className="form-input"
                       placeholder="Contraseña"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      required
+                      value={claveRegistro}
+                      onChange={(e) => setClaveRegistro(e.target.value)}
                       autoComplete="new-password"
                     />
                     <button
                       type="button"
                       className="toggle-password-btn"
-                      onClick={() => setShowRegPassword(!showRegPassword)}
-                      title={showRegPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      onClick={() => setMostrarClaveRegistro(!mostrarClaveRegistro)}
+                      title={mostrarClaveRegistro ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     >
-                      {showRegPassword ? (
+                      {mostrarClaveRegistro ? (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                           <line x1="1" y1="1" x2="23" y2="23" />
@@ -272,9 +250,9 @@ export default function LoginForm() {
                   </div>
                 </div>
 
-                {/* Register Field: Confirmar Contraseña */}
+                {/* Campo Registro: Confirmar Contraseña */}
                 <div className="form-group">
-                  <label htmlFor="regConfirmPassword" className="form-label">
+                  <label htmlFor="confirmarClaveRegistro" className="form-label">
                     Confirmar Contraseña
                   </label>
                   <div className="input-container">
@@ -285,36 +263,35 @@ export default function LoginForm() {
                       </svg>
                     </div>
                     <input
-                      id="regConfirmPassword"
-                      type={showRegPassword ? 'text' : 'password'}
+                      id="confirmarClaveRegistro"
+                      type={mostrarClaveRegistro ? 'text' : 'password'}
                       className="form-input"
                       placeholder="Repetir contraseña"
-                      value={regConfirmPassword}
-                      onChange={(e) => setRegConfirmPassword(e.target.value)}
-                      required
+                      value={confirmarClaveRegistro}
+                      onChange={(e) => setConfirmarClaveRegistro(e.target.value)}
                       autoComplete="new-password"
                     />
                   </div>
                 </div>
 
-                {/* Flip back to Login */}
+                {/* Volver a Login */}
                 <div className="form-extra">
                   <button
                     type="button"
                     className="register-link"
-                    onClick={() => setIsFlipped(false)}
+                    onClick={() => setEstaGirado(false)}
                   >
                     ¿Ya tienes una cuenta? Iniciar sesión
                   </button>
                 </div>
 
-                {/* Register Submit Button */}
+                {/* Boton de Enviar Registro */}
                 <button
                   type="submit"
-                  className={`btn-submit ${isRegSubmitting ? 'loading' : ''}`}
-                  disabled={isRegSubmitting}
+                  className={`btn-submit ${cargandoRegistro ? 'loading' : ''}`}
+                  disabled={cargandoRegistro}
                 >
-                  {isRegSubmitting ? (
+                  {cargandoRegistro ? (
                     <span className="spinner"></span>
                   ) : (
                     'Registrarse'
