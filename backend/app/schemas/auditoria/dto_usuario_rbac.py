@@ -1,25 +1,26 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+from app.models.enums import RolUsuario
 
 
 class UsuarioRBACBase(BaseModel):
-    nombre: str = Field(
+    nombre: Optional[str] = Field(
+        default=None,
         max_length=100,
         examples=["María"],
     )
-    apellido: str = Field(
+    apellido: Optional[str] = Field(
+        default=None,
         max_length=100,
         examples=["González"],
     )
     email: str = Field(
-        max_length=150,
+        max_length=255,
         examples=["maria.gonzalez@siada.gov.ar"],
     )
-    rol: str = Field(
-        max_length=50,
-        examples=["AUDITOR", "ADMIN"],
-    )
+    rol: RolUsuario
 
 
 class UsuarioRBACCreate(UsuarioRBACBase):
@@ -31,7 +32,7 @@ class UsuarioRBACCreate(UsuarioRBACBase):
 
 
 class UsuarioRBACResponse(UsuarioRBACBase):
-    id_usuario: int
+    id: int
     activo: bool
     created_at: datetime
 

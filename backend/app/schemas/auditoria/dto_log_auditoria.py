@@ -10,7 +10,8 @@ class LogAuditoriaBase(BaseModel):
         max_length=100,
         examples=["ORGANISMO_CREATE"],
     )
-    ip_origen: str = Field(
+    ip_origen: Optional[str] = Field(
+        default=None,
         max_length=45,
         examples=["192.168.1.10"],
     )
@@ -22,7 +23,7 @@ class LogAuditoriaCreate(LogAuditoriaBase):
 
 
 class LogAuditoriaResponse(LogAuditoriaBase):
-    id_log: int
+    id: int
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

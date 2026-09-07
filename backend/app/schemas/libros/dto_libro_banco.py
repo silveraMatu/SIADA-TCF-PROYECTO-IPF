@@ -8,20 +8,11 @@ from pydantic import BaseModel, ConfigDict, Field
 class LibroBancoBase(BaseModel):
     id_cuenta_mensual: int
     fecha_movimiento: date
-    numero_comprobante: Optional[str] = Field(default=None, max_length=100)
-    tipo_movimiento: str = Field(
-        max_length=20,
-        examples=["DEBITO", "CREDITO"],
-    )
-    concepto_texto_libre: str
-    monto: Decimal = Field(max_digits=15, decimal_places=2)
-    saldo_resultante: Decimal = Field(max_digits=15, decimal_places=2)
-    cuit_contraparte: Optional[str] = Field(
-        default=None,
-        min_length=11,
-        max_length=11,
-        examples=["30700000001"],
-    )
+    numero_cheque: Optional[str] = Field(default=None, max_length=50)
+    beneficiario: Optional[str] = Field(default=None, max_length=255)
+    depositos: Decimal = Field(max_digits=15, decimal_places=2)
+    retiros: Decimal = Field(max_digits=15, decimal_places=2)
+    saldo_resultante: Optional[Decimal] = Field(default=None, max_digits=15, decimal_places=2)
 
 
 class LibroBancoCreate(LibroBancoBase):
@@ -29,7 +20,7 @@ class LibroBancoCreate(LibroBancoBase):
 
 
 class LibroBancoResponse(LibroBancoBase):
-    id_banco: int
+    id: int
     conciliado: bool
     created_at: datetime
 

@@ -1,18 +1,17 @@
-from datetime import datetime
+from datetime import date, datetime
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+from app.models.enums import DecisionIntervencion
 
 
 class IntervencionAuditorBase(BaseModel):
     id_deteccion: int
-    id_usuario: int
-    decision: str = Field(
-        max_length=50,
-        examples=["APROBADA", "RECHAZADA"],
-    )
-    observaciones_dictamen: str = Field(
-        examples=["Anomalía confirmada por el auditor."],
-    )
+    id_auditor: int
+    id_juez: int
+    decision: DecisionIntervencion
+    observaciones: Optional[str] = None
+    fecha_resolucion: Optional[date] = None
 
 
 class IntervencionAuditorCreate(IntervencionAuditorBase):
@@ -20,7 +19,7 @@ class IntervencionAuditorCreate(IntervencionAuditorBase):
 
 
 class IntervencionAuditorResponse(IntervencionAuditorBase):
-    id_intervencion: int
-    fecha_resolucion: datetime
+    id: int
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

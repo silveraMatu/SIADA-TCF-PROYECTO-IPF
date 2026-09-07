@@ -1,40 +1,42 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class OrganismoBase(BaseModel):
+class OrganizacionBase(BaseModel):
     """Clase base que va a ser heredada por las demás
-    clases que compondran al DTO."""
-    nombre: str = Field( 
-        max_length=255, 
-        examples=["Instituto Politécnico Formosa"]
+    clases que compondrán al DTO."""
+    nombre: str = Field(
+        max_length=255,
+        examples=["Instituto Politécnico Formosa"],
     )
-    cuit: str = Field(
-        min_length=11,
-        max_length=11,
-        examples=["30700000001"]
-    )
-    rubro: str = Field(
+    unidad: Optional[str] = Field(
+        default=None,
         max_length=100,
-        examples=["Educacion", "Salud"]
+        examples=["Secretaría Académica"],
     )
-    jurisdiccion: str = Field(
-        default="Provincial",
+    rubro: Optional[str] = Field(
+        default=None,
         max_length=100,
-        examples=['Provincial', 'Municipal']
+        examples=["Educacion", "Salud"],
+    )
+    jurisdiccion: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        examples=['Provincial', 'Municipal'],
     )
 
-#schema para POST
-class OrganismoCreate(OrganismoBase):
+
+# schema para POST
+class OrganizacionCreate(OrganizacionBase):
     pass
 
 
-#Schema para GET
-class OrganismoResponse(OrganismoBase):
-    id_organismo: int
+# Schema para GET
+class OrganizacionResponse(OrganizacionBase):
+    id: int
     activo: bool
     created_at: datetime
 
-    #Pydantic lee directamente las instancias de SQLAlchemy
+    # Pydantic lee directamente las instancias de SQLAlchemy
     model_config = ConfigDict(from_attributes=True)
-
