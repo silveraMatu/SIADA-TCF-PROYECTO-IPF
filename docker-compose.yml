@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -24,18 +22,6 @@ services:
     depends_on:
       - db
 
-  neo4j:
-    image: neo4j:5.15.0
-    container_name: siada_neo4j
-    environment:
-      NEO4J_AUTH: neo4j/adminpassword
-      NEO4J_PLUGINS: '["apoc"]' 
-    ports:
-      - "7474:7474" # Interfaz visual web de Neo4j
-      - "7687:7687" # Puerto de conexión para el backend
-    volumes:
-      - neo4j_data:/data
 
 volumes:
   pgdata:
-  neo4j_data:

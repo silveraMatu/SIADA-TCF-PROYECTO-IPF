@@ -1,25 +1,18 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from typing import AsyncGenerator
+from collections.abc import Generator
+from sqlmodel import Session, create_engine
 
-DATABASE_URL = "postgresql+asyncpg://admin:adminpassword@localhost:5432/siada_db" #Esto después vamos a guardarlo en core/config.py
+from app.core.config import settings
 
-engine = create_async_engine(
-    DATABASE_URL, 
-    echo= True, #log en terminal
-    pool_size=10, #mantiene 10 conexiones abiertas
-    max_overflow=20 #20 conexiones extras temporales
-    )
+# Si usás SQLite local podés agregar connect_args={"check_same_thread": False}
+# Para PostgreSQL/MySQL la configuración estándar es directa:
+engine = create_engine(
+    str(settings.DATABASE_URI),  # o settings.SQLALCHEMY_DATABASE_URI según cómo lo llames en config.py
+    echo=False,
+    pool_pre_ping=True,
+)
 
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autoflush=False #evitar enviar cambios sin commit()
-    )
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+def get_session() -> Generator[Session, None, None]:
+    """Dependencia para inyectar la sesión en endpoints de FastAPI."""
+    with Session(engine) as session:
+        yield session
