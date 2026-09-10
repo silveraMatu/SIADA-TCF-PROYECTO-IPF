@@ -1,25 +1,20 @@
-import asyncio
 from logging.config import fileConfig
-from sqlalchemy import pool
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 from alembic import context
-
-# Al importar Base desde app.models, __init__.py ya importó y registró todos los modelos
-from app.models import Base
+from app.core.config import settings
+import app.db.base # Registra todos los modelos
 
 config = context.config
-
-# URL de conexión directa para asyncpg
-DATABASE_URL = "postgresql+asyncpg://admin:adminpassword@localhost:5432/siada_db"
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# target_metadata ahora contiene el 100% de las tablas
-target_metadata = Base.metadata
+# Inyectamos la URL de la base de datos de tu app
+config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+
+target_metadata = SQLModel.metadata
 
 
 def run_migrations_offline() -> None:
@@ -35,32 +30,21 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection: Connection) -> None:
-    context.configure(
-        connection=connection,
-        target_metadata=target_metadata,
-        compare_type=True,
-    )
-
-    with context.begin_transaction():
-        context.run_migrations()
-
-
-async def run_async_migrations() -> None:
-    connectable = async_engine_from_config(
+def run_migrations_online() -> None:
+    connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+        )
 
-    await connectable.dispose()
-
-
-def run_migrations_online() -> None:
-    asyncio.run(run_async_migrations())
+        with context.begin_transaction():
+            context.run_migrations()
 
 
 if context.is_offline_mode():

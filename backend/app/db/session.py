@@ -6,7 +6,7 @@ from app.core.config import settings
 # Si usás SQLite local podés agregar connect_args={"check_same_thread": False}
 # Para PostgreSQL/MySQL la configuración estándar es directa:
 engine = create_engine(
-    str(settings.DATABASE_URI),  # o settings.SQLALCHEMY_DATABASE_URI según cómo lo llames en config.py
+    str(settings.DATABASE_URL),  # o settings.SQLALCHEMY_DATABASE_URI según cómo lo llames en config.py
     echo=False,
     pool_pre_ping=True,
 )
