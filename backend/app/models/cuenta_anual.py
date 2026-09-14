@@ -1,21 +1,22 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, List
-from sqlalchemy import Integer, DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import TYPE_CHECKING, List, ClassVar, Optional
 from sqlalchemy.sql import func
-from app.db.base import Base
+from sqlmodel import SQLModel, Field, Relationship
 
 if TYPE_CHECKING:
-    from backend.app.models.organismo import Organizacion
+    from backend.app.models.organismo import Organismo
     from app.models.cuenta_mensual import CuentaMensual
 
-class CuentaAnual(Base):
-    __tablename__ = "cuentas_anual"
+class CuentaAnual(SQLModel, table=True):
+    __tablename__: ClassVar[str] = "cuentas_anual"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    id_organizacion: Mapped[int] = mapped_column(ForeignKey("organizaciones.id", ondelete="CASCADE"))
-    anio: Mapped[int] = mapped_column(Integer, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    id: Optional[int] = Field(primary_key=True, default=None)
+    id_organismo: int = Field(foreign_key="organismos.id")
+    anio: int = Field(nullable=False)
+    
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow, 
+        sa_column_kwargs={"server_default":func.now()})
 
-    organizacion: Mapped["Organizacion"] = relationship(back_populates="cuentas_anual")
-    cuentas_mensual: Mapped[List["CuentaMensual"]] = relationship(back_populates="cuenta_anual", lazy="selectin", cascade="all, delete-orphan")
+    organismo: "Organismo" = Relationship(back_populates="cuentas_anual")
+    cuentas_mensual: List["CuentaMensual"] = Relationship(back_populates="cuenta_anual", cascade_delete=True)

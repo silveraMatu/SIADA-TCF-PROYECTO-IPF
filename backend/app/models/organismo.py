@@ -6,8 +6,8 @@ from sqlalchemy.sql import func
 if TYPE_CHECKING:
     from app.models.cuenta_anual import CuentaAnual
 
-class Organizacion(SQLModel, table=True):
-    __tablename__: ClassVar[str] = "organizaciones"
+class Organismo(SQLModel, table=True):
+    __tablename__: ClassVar[str] = "organismos"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str = Field(max_length=255, nullable=False)
