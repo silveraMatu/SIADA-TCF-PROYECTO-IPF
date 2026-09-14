@@ -10,7 +10,7 @@ from app.models.libro_ingreso_egreso import LibroIngresoEgreso
 from app.models.libro_raci import LibroRACI
 from app.models.libro_rai import LibroRAI
 from app.models.log_auditoria import LogAuditoria
-from app.models.organizacion import Organizacion
+from backend.app.models.organismo import Organizacion
 from app.models.partida_presupuestaria import PartidaPresupuestaria
 from app.models.usuario_rbac import UsuarioRBAC
 from app.models.validacion import Validacion

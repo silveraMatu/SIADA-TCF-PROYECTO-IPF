@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.models.organizacion import Organizacion
+    from backend.app.models.organismo import Organizacion
     from app.models.cuenta_mensual import CuentaMensual
 
 class CuentaAnual(Base):

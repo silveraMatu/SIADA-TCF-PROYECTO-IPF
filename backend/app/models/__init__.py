@@ -9,7 +9,7 @@ from app.models.enums import (
     EstadoDeteccionML,
     DecisionIntervencion,
 )
-from app.models.organizacion import Organizacion
+from backend.app.models.organismo import Organizacion
 from app.models.partida_presupuestaria import PartidaPresupuestaria
 from app.models.cuenta_anual import CuentaAnual
 from app.models.cuenta_mensual import CuentaMensual
