@@ -27,4 +27,4 @@ class Organizacion(SQLModel, table=True):
         },
     )
 
-    cuentas_anual: List["CuentaAnual"] = Relationship(back_populates="organizacion")
+    cuentas_anual: List["CuentaAnual"] = Relationship(back_populates="organizacion", cascade_delete=True)

@@ -1,53 +1,106 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
-from sqlalchemy import String, Date, DateTime, Numeric, Text, ForeignKey, Index
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import TYPE_CHECKING, ClassVar, Optional
+from sqlalchemy import Column, ForeignKey, Index, Numeric
 from sqlalchemy.sql import func
-from app.db.base import Base
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.cuenta_mensual import CuentaMensual
 
-class LibroIngresoEgreso(Base):
-    __tablename__ = "libro_ingresos_egresos"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    id_cuenta_mensual: Mapped[int] = mapped_column(ForeignKey("cuentas_mensual.id", ondelete="CASCADE"))
+class LibroIngresoEgreso(SQLModel, table=True):
+    __tablename__: ClassVar[str] = "libro_ingresos_egresos"
 
-    fecha: Mapped[date] = mapped_column(Date, nullable=False)
-    concepto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    numero_cheque: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    numero_comprobante: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    id_cuenta_mensual: int = Field(
+        sa_column_args=[ForeignKey("cuentas_mensual.id", ondelete="CASCADE")]
+    )
 
-    caja_debe: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    caja_haber: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    caja_saldo: Mapped[Optional[Decimal]] = mapped_column(Numeric(15, 2), nullable=True)
+    fecha: date
+    concepto: Optional[str] = Field(default=None)
+    numero_cheque: Optional[str] = Field(default=None, max_length=50)
+    numero_comprobante: Optional[str] = Field(default=None, max_length=50)
 
-    banco_debe: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    banco_haber: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    banco_saldo: Mapped[Optional[Decimal]] = mapped_column(Numeric(15, 2), nullable=True)
+    # Caja
+    caja_debe: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    caja_haber: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    caja_saldo: Optional[Decimal] = Field(
+        default=None,
+        sa_column=Column(Numeric(15, 2), nullable=True)
+    )
 
-    egreso_inc1: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    egreso_inc2: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    egreso_inc3: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    egreso_inc4: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    egreso_inc5: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
+    # Banco
+    banco_debe: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    banco_haber: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    banco_saldo: Optional[Decimal] = Field(
+        default=None,
+        sa_column=Column(Numeric(15, 2), nullable=True)
+    )
 
-    ingreso_municipal: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    ingreso_otras: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
+    # Egresos por inciso
+    egreso_inc1: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    egreso_inc2: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    egreso_inc3: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    egreso_inc4: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    egreso_inc5: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
 
-    cuentas_varias_concepto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    cuentas_varias_debe: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    cuentas_varias_haber: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
+    # Ingresos
+    ingreso_municipal: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    ingreso_otras: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    # Cuentas varias
+    cuentas_varias_concepto: Optional[str] = Field(default=None)
+    cuentas_varias_debe: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
+    cuentas_varias_haber: Decimal = Field(
+        sa_column=Column(Numeric(15, 2), nullable=False, default=0)
+    )
 
-    cuenta_mensual: Mapped["CuentaMensual"] = relationship(back_populates="libros_ingresos_egresos")
+    # Timestamps
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={
+            "server_default": func.now(),
+            "onupdate": func.now(),
+        },
+    )
 
-    __table_args__ = (
-        Index('idx_ingresos_egresos_cuenta_mensual', 'id_cuenta_mensual'),
-        Index('idx_ingresos_egresos_fecha', 'fecha'),
-        Index('idx_ingresos_egresos_cheque', 'numero_cheque'),
+    # Relaciones
+    cuenta_mensual: Optional["CuentaMensual"] = Relationship(
+        back_populates="libros_ingresos_egresos"
+    )
+
+    # Índices
+    __table_args__: ClassVar[tuple] = (
+        Index("idx_ingresos_egresos_cuenta_mensual", "id_cuenta_mensual"),
+        Index("idx_ingresos_egresos_fecha", "fecha"),
+        Index("idx_ingresos_egresos_cheque", "numero_cheque"),
     )

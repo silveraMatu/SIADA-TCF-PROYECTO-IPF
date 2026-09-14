@@ -1,50 +1,69 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
-from sqlalchemy import String, Date, DateTime, Numeric, Text, ForeignKey, Index
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import TYPE_CHECKING, ClassVar, Optional
+from sqlalchemy import Column, Index, Numeric
 from sqlalchemy.sql import func
-from app.db.base import Base
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.cuenta_mensual import CuentaMensual
     from app.models.partida_presupuestaria import PartidaPresupuestaria
 
-class LibroRACI(Base):
-    __tablename__ = "libro_raci"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    id_cuenta_mensual: Mapped[int] = mapped_column(ForeignKey("cuentas_mensual.id", ondelete="CASCADE"))
-    id_partida: Mapped[int] = mapped_column(ForeignKey("partida_presupuestaria.id"))
+class LibroRACI(SQLModel, table=True):
+    __tablename__: ClassVar[str] = "libro_raci"
 
-    numero_asiento: Mapped[Optional[int]] = mapped_column(nullable=True)
-    fecha_compromiso: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    fecha_devengado: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    fecha_pago: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    id_cuenta_mensual: Optional[int] = Field(
+        default=None,
+        foreign_key="cuentas_mensual.id",
+    )
+    id_partida: int = Field(foreign_key="partida_presupuestaria.id")
 
-    numero_cheque: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    numero_orden_pago: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    numero_expediente: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    numero_asiento: Optional[int] = Field(default=None)
+    fecha: Optional[date] = Field(default=None)
+    numero_expediente: int
 
-    concepto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    beneficiario: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    concepto: Optional[str] = Field(default=None)
 
-    monto_comprometido: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    monto_devengado: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    monto_pagado: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
+    compromiso_acumulado: Decimal = Field(
+        sa_column=Column(Numeric(14, 2), nullable=False, default=0)
+    )
 
-    observaciones: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    devengado_acumulado: Decimal = Field(
+        sa_column=Column(Numeric(14, 2), nullable=False, default=0)
+    )
+    devengado_saldo: Decimal = Field(
+        sa_column=Column(Numeric(14, 2), nullable=False, default=0)
+    )
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    pago_numero_cheque: Optional[str] = Field(default=None, max_length=50)
+    pago_acumulado: Decimal = Field(
+        sa_column=Column(Numeric(14, 2), nullable=False, default=0)
+    )
+    pago_saldo_a_pagar: Decimal = Field(
+        sa_column=Column(Numeric(14, 2), nullable=False, default=0)
+    )
 
-    cuenta_mensual: Mapped["CuentaMensual"] = relationship(back_populates="libros_raci")
-    partida: Mapped["PartidaPresupuestaria"] = relationship(back_populates="libros_raci")
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={
+            "server_default": func.now(),
+            "onupdate": func.now(),
+        },
+    )
 
-    __table_args__ = (
-        Index('idx_raci_cuenta_mensual', 'id_cuenta_mensual'),
-        Index('idx_raci_partida', 'id_partida'),
-        Index('idx_raci_fecha_compromiso', 'fecha_compromiso'),
-        Index('idx_raci_cheque', 'numero_cheque'),
-        Index('idx_raci_orden_pago', 'numero_orden_pago'),
+    cuenta_mensual: Optional["CuentaMensual"] = Relationship(back_populates="libros_raci")
+    partida: Optional["PartidaPresupuestaria"] = Relationship(back_populates="libros_raci")
+
+    __table_args__: ClassVar[tuple] = (
+        Index("idx_raci_cuenta_mensual", "id_cuenta_mensual"),
+        Index("idx_raci_partida", "id_partida"),
+        Index("idx_raci_fecha", "fecha"),
+        Index("idx_raci_expediente", "numero_expediente"),
+        Index("idx_raci_cheque", "pago_numero_cheque"),
     )
