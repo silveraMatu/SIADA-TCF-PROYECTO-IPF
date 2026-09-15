@@ -17,7 +17,7 @@ from app.models.libro_raci import LibroRACI
 from app.models.libro_rai import LibroRAI
 from app.models.organismo import Organismo
 from app.models.partida_presupuestaria import PartidaPresupuestaria
-from app.models.usuario_rbac import UsuarioRBAC
+from app.models.usuario_rbac import Usuario
 from app.models.validacion import Validacion
 
 __all__ = [
@@ -38,5 +38,5 @@ __all__ = [
     "LibroRACI",
     "LibroRAI",
     "Validacion",
-    "UsuarioRBAC",
+    "Usuario",
 ]
