@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List, ClassVar, Optional
 from sqlmodel import Field, Relationship
 from sqlalchemy.sql import func
-from app.schemas.organismo import OrganismoBase
+from backend.app.schemas.organismoDTO import OrganismoBase
 
 if TYPE_CHECKING:
     from app.models.cuenta_anual import CuentaAnual

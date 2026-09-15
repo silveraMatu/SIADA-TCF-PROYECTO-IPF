@@ -4,7 +4,7 @@ from sqlmodel import Field
 from sqlalchemy import Column, Enum as SQLenum
 from sqlalchemy.sql import func
 
-from app.schemas.usuario import UsuarioBase
+from backend.app.schemas.usuarioDTO import UsuarioBase
 from app.models.enums import RolUsuario
 
 class Usuario(UsuarioBase, table=True):
